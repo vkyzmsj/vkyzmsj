@@ -7,16 +7,10 @@ $(function () {
   // copy function
   function copy (text, ctx) {
     if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
-      var textarea = document.createElement('textarea')
-      textarea.style.position = 'fixed' // Prevent scrolling to bottom of page in MS Edge.
-      document.body.appendChild(textarea)
-      textarea.textContent = text
-      textarea.focus()
-      textarea.setSelectionRange(0, textarea.value.length)
       try {
         document.execCommand('copy') // Security exception may be thrown by some browsers.
         $(ctx).prev('.copy-notice')
-          .text(GLOBAL.copy.success)
+          .text(GLOBAL_CONFIG.copy.success)
           .velocity({
             translateX: -30,
             opacity: 1
@@ -27,7 +21,7 @@ $(function () {
           })
       } catch (ex) {
         $(ctx).prev('.copy-notice')
-          .text(GLOBAL.copy.error)
+          .text(GLOBAL_CONFIG.copy.error)
           .velocity({
             translateX: -30,
             opacity: 1
@@ -37,11 +31,9 @@ $(function () {
             easing: 'easeOutQuint'
           })
         return false
-      } finally {
-        document.body.removeChild(textarea)
       }
     } else {
-      $(ctx).prev('.copy-notice').text(GLOBAL.copy.noSupport)
+      $(ctx).prev('.copy-notice').text(GLOBAL_CONFIG.copy.noSupport)
     }
   }
   // click events
@@ -53,6 +45,6 @@ $(function () {
     selection.addRange(range)
     var text = selection.toString()
     copy(text, this)
-    text = ''
+    selection.removeAllRanges()
   })
 })

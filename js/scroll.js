@@ -53,7 +53,7 @@ $(function () {
   })
 
   // head scroll
-  $('h1,h2,h3,h4,h5,h6').on('click', function (e) {
+  $('#post-content').find('h1,h2,h3,h4,h5,h6').on('click', function (e) {
     scrollToHead('#' + $(this).attr('id'))
   })
 
@@ -103,13 +103,25 @@ $(function () {
       })
   }
 
+  function updateAnchor (anchor) {
+    if (window.history.replaceState && anchor !== window.location.hash) {
+      window.history.replaceState(undefined, undefined, anchor)
+    }
+  }
+
   // find head position & add active class
   function findHeadPosition (top) {
+    // assume that we are not in the post page if no TOC link be found,
+    // thus no need to update the status
+    if ($('.toc-link').length === 0) {
+      return false
+    }
+
     if (top < 200) {
       $('.toc-link').removeClass('active')
       $('.toc-child').hide()
     }
-    var list = $('h1,h2,h3,h4,h5,h6')
+    var list = $('#post-content').find('h1,h2,h3,h4,h5,h6')
     var currentId = ''
     list.each(function () {
       var head = $(this)
@@ -119,6 +131,8 @@ $(function () {
     })
     var currentActive = $('.toc-link.active')
     if (currentId && currentActive.attr('href') !== currentId) {
+      updateAnchor(currentId)
+
       $('.toc-link').removeClass('active')
       var _this = $('.toc-link[href="' + currentId + '"]')
       _this.addClass('active')
